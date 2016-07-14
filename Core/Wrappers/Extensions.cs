@@ -22,23 +22,23 @@ namespace eX_INI.Wrapper
             return true;
         }
 
-        public static StringBuilder CreateStringBuilder(this string value, int startIndex, int endIndex)
-        {
-            return new StringBuilder(value, startIndex, value.Length - startIndex - (value.Length - endIndex) - 1, 0);
-        }
+        //public static StringBuilder CreateStringBuilder(this string value, int startIndex, int endIndex)
+        //{
+        //    return new StringBuilder(value, startIndex, value.Length - startIndex - (value.Length - endIndex) - 1, 0);
+        //}
 
-        public static string ReplaceEscapeSequence(this string value, string findValue, string replaceValue)
-        {
-            return new StringBuilder(value).Replace(findValue, replaceValue).ToString();
-        }
+        //public static string ReplaceEscapeSequence(this string value, string findValue, string replaceValue)
+        //{
+        //    return new StringBuilder(value).Replace(findValue, replaceValue).ToString();
+        //}
 
-        // This will replaces only first occurence of string (speed-up)
-        public static string ReplaceFirstOccurenceOnly(this string value, string findValue, string replaceValue)
-        {
-            int i = value.IndexOf(findValue, StringComparison.Ordinal);
+        //// This will replaces only first occurence of string (speed-up)
+        //public static string ReplaceFirstOccurenceOnly(this string value, string findValue, string replaceValue)
+        //{
+        //    int i = value.IndexOf(findValue, StringComparison.Ordinal);
 
-            return (i > -1) ? new StringBuilder(value).Replace(findValue, replaceValue, i, findValue.Length).ToString() : value;
-        }
+        //    return (i > -1) ? new StringBuilder(value).Replace(findValue, replaceValue, i, findValue.Length).ToString() : value;
+        //}
     }
 }
 

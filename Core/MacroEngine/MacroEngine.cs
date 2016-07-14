@@ -81,6 +81,7 @@ namespace eX_INI.Core.MacroEngine
     }
 
     // To speed up things little hopefully ;)
+    // Custom comparers are quicker..
     public class MacroComparer : IEqualityComparer<Macro>
     {
         internal Macro Element;

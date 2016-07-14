@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace eX_INI
 {
-    // Settings for parser, u can create more settings and just change settings for parser
+    // Settings for parser, u can create more settings and just change settings for parser on the fly
     public class IniParserSettings
     {
         public IniParserSettings()

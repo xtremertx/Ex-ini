@@ -12,7 +12,7 @@ using System.Globalization;
 namespace eX_INI
 {
     // Represents INI parser, u can parse INI files and strings, parsed output is created as INI object in memory
-    // Parser can parse whole input at time or just sections u need (so u will only work with usefull output)
+    // Parser can parse whole input at time or just sections u need (so u will only work with usefull output - not implemented fully)
     // Parser have ability to make a stream with binary value (tagged by: ~ß) (not implemented feature)
     public class IniParser
     {
@@ -390,16 +390,6 @@ namespace eX_INI
 
         #endregion
 
-        private void CacheSettings()
-        {
-            // MUST BE CALLED BEFORE LOAD/SAVE - to refresh settings before using it in parser!
-            // Caching this can significantly speed up Split() methods - refresh on new user settings
-            _inheritanceSplit = new string[] { _settings.InheritanceChar };
-            _pairSplit = new string[] { _settings.PairOperator };
-            _includeCount = _settings.IncludeStartChar.Length + _settings.IncludeEndChar.Length;
-            _sectionCount = _settings.SectionStartChar.Length + _settings.SectionEndChar.Length;
-        }
-
         // Parser nastaveni je použito pro ukládání a loadování (vyjímkou je: Load(INI)/Save(INI), který využije interní nastavení INI objektu)
         #region Load/Save Methods
 
@@ -714,12 +704,25 @@ namespace eX_INI
         }
 
         #endregion
+
+        #region Custom Part
         private void RaiseOnErrorEvent(string info, ErrorLevelType infoLevel = ErrorLevelType.Info)
         {
             var handler = OnError;
             if (handler != null)
                 handler(info, infoLevel);
         }
+
+        private void CacheSettings()
+        {
+            // MUST BE CALLED BEFORE LOAD/SAVE - to refresh settings before using it in parser!
+            // Caching this can significantly speed up Split() methods - refresh on new user settings
+            _inheritanceSplit = new string[] { _settings.InheritanceChar };
+            _pairSplit = new string[] { _settings.PairOperator };
+            _includeCount = _settings.IncludeStartChar.Length + _settings.IncludeEndChar.Length;
+            _sectionCount = _settings.SectionStartChar.Length + _settings.SectionEndChar.Length;
+        }
+        #endregion
 
         #region Static Methods
         // Vrátí relativní cestu k souboru na základě adresáře bázového

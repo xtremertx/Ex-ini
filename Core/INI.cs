@@ -261,7 +261,7 @@ namespace eX_INI
             return (@return == null) ? defaultValue :
                 ((@return.Equals(default(R))) ? defaultValue :@return); // [NOTE] Equals value types OK, ref. types FAILS and return original value :P
 
-            // Should be slower coz of reflexion
+            // Should be slower coz of reflection
             //if (@return.GetType().IsValueType)
             //{
             //    // enum, struct or primitive type is already: default(R)

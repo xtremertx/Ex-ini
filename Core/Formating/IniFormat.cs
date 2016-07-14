@@ -8,7 +8,6 @@ namespace eX_INI
     // Implementation of IIniFomatable
     public class IniFormat : IIniFormatable
     {
-        //private StringBuilder _strBuilder = new StringBuilder();
         private IniParserSettings settings = null;
 
         public IniFormat(IniParserSettings settings)
