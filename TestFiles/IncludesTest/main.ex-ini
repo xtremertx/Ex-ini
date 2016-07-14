@@ -1,0 +1,4 @@
+# this will compare both or more files, all duplicates are ignored in final file
+# files are ordered by priority (first file has biggest priority)
+<~\A.ex-ini>
+<~\B.ex-ini>

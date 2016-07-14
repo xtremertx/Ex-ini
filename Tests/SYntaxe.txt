@@ -1,0 +1,52 @@
+Èitelnı INI soubor by mìl vypadat takto:
+u kadého pøíkladu je syntaxe, ta vysvìtluje jak má bıt zapsán správnì.
+Jednotlivé èásti v syntaxi jsou oddìleny '|' znakem, syntakèní vysvìtlivky jsou 
+obsaeny v ostrıch závorkách <>, jako: <mezera>, znaèí e tam vdy musí bıt mezera.
+
+# komentáø
+syntaxe: <#><mezera><komentáø>
+
+[moje sekce]
+syntaxe: <[><jméno sekce><]>
+
+[sekce : bázová]
+syntaxe: <[><jméno sekce A><>mezera<:><jméno sekce B><]>
+
+klíè = hodnota
+syntaxe: <klíè><mezera><=><mezera><hodnota>
+
+//ukázka 01 INI:
+
+# tohle je moje sekce
+# a nìco dalšího...
+[nìjaká sekce]
+
+# tohle je mùj pár
+klíèA = True
+
+klíèB = False
+klíèC = 0.1543374e56
+
+// end
+
+Pokud pár obsahuje komentáø je mezi ním zvrhu i zdola volnı øádek
+Takto tedy vypadá èitelnı INI! Doporuèuji pro soubory INI, které edituje uivatel, pøípadnì ète!
+
+Dále je moné po parseru chtít minified INI, ten zabírá o nìco ménì místa,
+jeliko vtiskne vše na sebe (ušetøí volné øádky, i mezery) - doporuèuji pro INI
+soubory které ète i edituje program.
+
+//ukázka 01-1 INI:
+
+# tohle je moje sekce
+# a nìco dalšího...
+[nìjaká sekce]
+# tohle je mùj pár
+klíèA=True
+klíèB=False
+klíèC=0.1543374e56
+
+// end
+
+Další moností je vypnout poznámky! Pokud je INI èteno i editováno programem není jich tøeba,
+to sníí nároky na pamìt INI objektu a mùe zrychlit parser!

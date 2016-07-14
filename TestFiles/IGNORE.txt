@@ -1,0 +1,21 @@
+# IGNORUJE DUPLIKATY, jako par AA=BB, a duplikovanou sekci A
+[A]
+A=A
+AA=AA
+AA=BB
+
+[B]
+# RR
+B=B
+
+# nezmìní sekci na A protože A ignoruje, je tedy stále v B a tam nahromadí páry s poznámkami (fixed)
+[A]
+# COMMENT
+AA=ZZ
+# COMMENT
+ADD=1
+
+# HEllo
+[NEW]
+# HI
+TEST=T

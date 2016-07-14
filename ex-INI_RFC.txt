@@ -1,0 +1,125 @@
+﻿This document contains RFC describing ex-INI format with all features.
+
+Contains:
+
+0) Prolog - basics
+1) Inheritance
+2) Includes
+3) Binary Streams - not implemented
+4) Macros - not implemented (experimental)
+
+IMPORTANT NOTE: This document contains very quick list of rules!
+
+
+~<0>~
+
+PROLOG - BASICS:
+================
+
+We'll define basic struct of INI file and all elements it can consists of!
+
+INI file can consists of sections, marked as: [SectionNameHere]
+Each section can consists of pairs, pair definition is: keyOrId=valueOrData
+Each pair can have only one value and key, key identifies the value inside of section, value contains data associated with key.
+Duplicated pairs - are pairs in same section with same key, we ignore every other occurence after first one.
+Duplicated sections - are sections in same INI with same name, we ignore every other occurence after first one.
+Blank lines - are lines that consists of white characters (char.IsWhiteCharacter for more on MSDN), normally ignored by parser (jump over) or saved as EMPTY notes (white characters are removed), depens on parser settigns (FLAGS set by user)
+Notes - notes have explaining purpose, we support only single line notes, not notes on the same line as other elements described above nor multiline notes, notes can be ignored by parser (jump over)
+Empty INI file is jump over.
+NULL pair values are saved as string.Empty by parser!
+
+
+~<1>~
+
+INHERITANCE:
+============
+
+We are using simple inheritance like in C# not multi-inheritance like in C++!
+Section can inherit from another section using struct like this: [A:B]
+Section can inherit only from one section at time, however any base section can have unlimited number of childs (inheritance hierarchy trees).
+Section can not inherint from self, also cyclic ihneritance it is not possible (parser will remove it)!
+
+> Overriding
+
+When section A inherits from section B, section A will get all pairs in B by inheritance, section B then can override any inherited pair with own value/data, it can also define own new pairs.
+Its not possible to hide any pair from parent, any parent section always provides all pairs to child section.
+
+~<2>~
+
+INCLUDES:
+=========
+
+Includes make possible to include some another INI file into current one, they giving us possibility to break a big INI file into smaller pieces - this gives us better readeability and orientation what every INI does!
+Every INI file can contain unlimited number of includes, however we recommend you to lower the number of included in INI files to improve performance (reading includes is quicker than reading many ini files, probably ;-) )
+Parser dont read any includes from included files!
+Includes CANT be cyclic or hierarchical (making trees)!
+Include syntax is like: <pathToINIFile>
+Include always contains an absolute or relative path to some INI file, if INI file is not found nothing happens, parser will continue in work! (error-free, it will jump over)
+Include relative path is using main INI file path as current directory for any relative path! So if we're reading now C:\Folder\conf.ini, relative include can be: <~\conf2.ini> or <~\AnotherFolder\test.ini>
+Includes MUST be placed on the start/end of file OR between sections, if you place include between section pairs you will hide rest of the pairs after include in section!
+Its possible to use includes in "STREAM or STRING input" for parser, if user will supply "base_path" argument for relative includes, if not parser will use application base path instead!
+
+> Convention
+
+Every relative path must start with a prefix like: "~\" (this will "turn on" relative feature - respectively parser relative solver)
+Its not needed to use ".ini" as filename extension, if we use: <~\MyIniFile> its ok, ".ini" will be used by default (basen on settings), if parser dont find out the file specified, nothing happens and parser will continue in work!
+This "extension convention" can be used together with relative or absolute path!
+Paths are case sensitive!
+
+[WARNING] Not patched!
+
+Tricks with hidding and injection: 
+
+[!] To avoid this problems, just check saved HASH of INI file or ENCRYPT INI in your application!
+
+- Hidding trick is possible when included INI file rly exists is specified (tricked) destination!
+- All pairs after include are hidden because included ini was parsed (existed)!
+- Includes = Off, means ignore dont works, Includes = On: is oposite, this bahavior can be used for hidding..
+ 
+- There are some ways how to inject own settings into .INI "implicitly" (force parser to do it), not "explicitly" by writing settings inside .INI on ur own.
+- using: <~\> , these lead to relative path with hidden file name! (its hiding filename basically)
+- but parser will remove "~\" prefix and get absolute path BASED ON where MAIN.INI file is, lets say: C:\Users\JohnConnor\Desktop\Main.ini
+- then parser know that BASE folder is: C:\Users\JohnConnor\Desktop and it will add .ini -> C:\Users\JohnConnor\Desktop.ini -> Done
+
+- Second way is to use auto-absolute path trick:
+- <~> will use base path as "EXE PATH CURRENT" + "~.ini" -> ExePathCurrent\~.ini, name is not hidden however, its "~"!
+- So its trying to find the file specified in exe folder always!
+
+~<3>~
+
+BINARY STREAMS (NOT IMPLEMENTED):
+===============
+
+Binary stream is basically some pair, containing "special sign" making from current pair "binary stream enabled" pair.
+Binary stream looks like: ~ßkey=DATA (its basically special macro), its using prefix "~ß"
+
+How it works:
+Binary stream is recognized by parser but data part is not read, parser only remembers position in file and hash of file! 
+When user wants data, parser jumps into INI file making a stream containing data from position, this is usefull for big data sizes! 
+Parser also have hash of file, this is prevention against the sudden changes of file, so file cant be changed in order to use binary stream feature!
+
+[Note](We never know if binary stream still exists in file, scanning of file can take a lot of time against jumping on the right position in file!)
+
+~<4>~
+
+MACROS: (CONCEPT NOT IMPLEMENTED)
+=======
+
+This is a special feature that can be used for special things, basically it makes all compatible for parser. Its more like a concept...
+
+Macros are basically special pairs, somethink like macros in C++ or compiler main words like: using, for, if, etc..
+Macros are reserved words for our own purpose, if someone wants to use them, them need to tell parser how to read them and what they do!
+
+For example:
+&null=hereIsSomeMacro
+
+We can see that macro is pair, but moreover we can see its basically a key what makes macro visible and recognizable by parser and value contains macro data what are used by parser for extra logic...
+
+So: &null is macro saying for example that: &null contains list of keys what should be ignored by inheritance
+
+&null=A,B,01,KeyF -> sealed keys, they cant be inherited by other sections, never...
+
+So we can derive a new parser with new logic, recognizing some macros and using their data to make some actions!
+
+Macros must be always first pairs in section, to be quickly recognized by parser, macro function with macro key can be added to parser, modular parser architecture will then use this to search every section for macros, if
+macros are find out, parser start macro function to make logic for macro... (this can be used for transformation of XML into INI with all features like in XML, for example attributs from XML in INI by macro _attr=?)

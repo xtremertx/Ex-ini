@@ -1,0 +1,18 @@
+﻿# NOTE
+_global = YEAH
+# NOTE
+_global2 = 2222
+
+
+# problem is with decision here: If(GlobalSectionDontExistInFile && UserDontWantToCreateGlobal) -> Note on first line should be associated with pair or global section? Pair looks more optimal right?!
+# FIXED in parser!
+
+
+Second example is quite predictable:
+
+
+# NOTE WILL BE ASSOCIATED WITH GLOBAL HERE!
+[]
+_global = YEAH
+# NOTE
+_global2 = 2222

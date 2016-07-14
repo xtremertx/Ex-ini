@@ -1,0 +1,12 @@
+# _global macro
+GG=YES
+_global=YES
+
+[EXTRA]
+XX=EXTRA
+
+# B.ini
+[A]
+DUPLICATE=YES
+# TEST
+B=AA
