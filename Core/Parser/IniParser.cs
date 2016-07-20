@@ -270,13 +270,20 @@ namespace eX_INI
             // Get a path to .ini file
             StringBuilder strBuilder = new StringBuilder(include, _settings.IncludeStartChar.Length, include.Length - _includeCount, 0);
             string path = strBuilder.ToString();
-            var _fInfo = new FileInfo(main_ini_path);
+
+            // Include path is empty?
+            if (path.Length == 0)
+            {
+                RaiseOnErrorEvent("Include path was empty!", ErrorLevelType.Warning);
+                return;
+            }
 
             // Fix: DO NOT INCLUDE INCLUDES WITH SAME NAME AS CURRENT FILENAME (coz parser will try to parse their content, but ignoring it coz duplicated content = reading times high)
             // <~\FILENAME.ext> but we're in FILENAME.ext right now!
             // NOTE: This will work even when parsing from STREAM or STRING, in that case user will not specify filename but directory path so it will be ending on: \.x, however we know that whole content of ini is in
             // STRING or STREAM so user cant make cyclic include ;) (its simply possible only in filenames on HDD)
             // Also remove this kind of includes from file and dont make them editable! (auto-repair feature)
+            var _fInfo = new FileInfo(main_ini_path);
             if (path.IndexOf(_fInfo.Name) != -1)
             {
                 RaiseOnErrorEvent("Ignoring include refering to the same file we are in!", ErrorLevelType.Error);
@@ -314,7 +321,23 @@ namespace eX_INI
             // Is relative or absolute?
             if (path.StartsWith(_settings.RelativePathSymbol, StringComparison.OrdinalIgnoreCase))
             {
-                path = strBuilder.ToString(2, strBuilder.Length - 2);
+                #region AntiHidingFix
+                // Path ends on '\', filename is unknown to us, jump out!
+                if (path[path.Length - 1] == '\\')
+                {
+                    RaiseOnErrorEvent("Include path ends by '\' char and its considered to be a folder!", ErrorLevelType.Error);
+                    return;
+                }
+
+                // Contains only RelativePathSymbol - jump out!
+                if (path.Length == _settings.RelativePathSymbol.Length)
+                {
+                    RaiseOnErrorEvent("Include contains only RelativePathSymbol!", ErrorLevelType.Error);
+                    return;
+                }
+                #endregion
+
+                path = strBuilder.ToString(_settings.RelativePathSymbol.Length, strBuilder.Length - _settings.RelativePathSymbol.Length);
                 path = IniParser.GetAbsolutePath(path, _fInfo.DirectoryName);
             }
             else

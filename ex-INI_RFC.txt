@@ -54,6 +54,7 @@ Every INI file can contain unlimited number of includes, however we recommend yo
 Parser dont read any includes from included files!
 Includes CANT be cyclic or hierarchical (making trees)!
 Include syntax is like: <pathToINIFile>
+Empty includes or folder includes are ignored! (<~\>, <~>, <>, <~\folder\> - not valid | <myFile>, <~myFile>, <~\myFile> - valid)
 Include always contains an absolute or relative path to some INI file, if INI file is not found nothing happens, parser will continue in work! (error-free, it will jump over)
 Include relative path is using main INI file path as current directory for any relative path! So if we're reading now C:\Folder\conf.ini, relative include can be: <~\conf2.ini> or <~\AnotherFolder\test.ini>
 Includes MUST be placed on the start/end of file OR between sections, if you place include between section pairs you will hide rest of the pairs after include in section!
@@ -66,7 +67,7 @@ Its not needed to use ".ini" as filename extension, if we use: <~\MyIniFile> its
 This "extension convention" can be used together with relative or absolute path!
 Paths are case sensitive!
 
-[WARNING] Not patched!
+[INFO] Patched!
 
 Tricks with hidding and injection: 
 
