@@ -4,7 +4,13 @@ Extended INI library for .NET [ Fast, Save, Simple and Multiplatform ]
 Under development right now!
 ----------------------------
 
-# Release info:
+# Version:
 
 Current stable version - 2.0.0.3
+
+# Usage:
+
+** Using parser **
+
+
 
