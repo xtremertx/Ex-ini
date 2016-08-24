@@ -6,13 +6,13 @@ Under development right now!
 
 # Version:
 
-Current stable version - 2.0.0.3
-[![Current stable version](http://test.the-one.cz/github/ex-ini/logo.svg)](https://github.com/xtremertx/Ex-ini/branch/master)
+[![Current stable version](http://test.the-one.cz/github/ex-ini/logo.svg)](https://github.com/xtremertx/Ex-ini)
+Current stable version - `2.0.0.3`
 
 # Usage:
 
 ```C#
-// DOTO
+// DOTO...
 ```
 
 
