@@ -24,6 +24,7 @@ Features
 * Detection of file encoding or user specified encoding ([`BOM detection`](https://en.wikipedia.org/wiki/Byte_order_mark))
 * OOP manipulation with ini data (sections, pairs, etc.)
 * Merge functionality (merging two .ini objects together)
+* Adding of ini content into ini object as string
 
 # Usage:
 
