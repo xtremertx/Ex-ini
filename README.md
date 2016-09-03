@@ -1,11 +1,11 @@
-[![Current stable version](http://test.the-one.cz/github/ex-ini/version.svg)](https://github.com/xtremertx/Ex-ini)
+[![Current version](http://test.the-one.cz/github/ex-ini/version.svg)](https://github.com/xtremertx/Ex-ini)
 [![License](http://test.the-one.cz/github/ex-ini/license.svg)](https://github.com/xtremertx/Ex-ini)
 # Ex-ini
 Extended INI library for .NET
 
 Library is providing a fast, save and simple manipulation for ini files and ini content, together with additional extended features.
 
-Under development right now!
+Under development right now, most features implemented!
 
 # Version:
 
