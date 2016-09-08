@@ -1,11 +1,20 @@
 ﻿
+using System;
+using System.ComponentModel;
 namespace eX_INI
 {
+    [Flags]
     public enum UseOfIncludes : byte
     {
-        Read = 1,               // Parser will read included files
-        Ignore = 0,             // Parser will ignore included files
-        EditAndRestore = 2,     // Includes are stored into ini object, but it's not read by the parser (its possible to edit them and restore)
-        //ReadAndRestore = (Read | EditAndRestore)      // Includes are stored into .ini object and also read by the parser (so they are interpreted and restored back, you can also edit them)
+        [Description("Alias: Ignore")]
+        None = 1 << 0,
+        [Description("Parser will ignore included files")]
+        Ignore = None,
+        [Description("Parser will read included files")]       
+        Read = 1 << 2,
+        [Description("Includes are stored into .ini object, but it's not read by the parser (its possible to edit them and restore)")]           
+        EditAndRestore = 1 << 3,
+        //[Description("Includes are stored into .ini object and also read by the parser")]   
+        //ReadEditAndRestore = (Read | EditAndRestore)
     }
 }

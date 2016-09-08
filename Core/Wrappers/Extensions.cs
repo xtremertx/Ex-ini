@@ -1,4 +1,4 @@
-﻿#if !(NETFX_40 || NETFX_45 || NETFX_451)
+﻿#if !(NETFX_40 || NETFX_45 || NETFX_451 || NETFX_452 || NETFX_46 || NETFX_461 || NETFX_462)
 
 using System;
 using System.Collections.Generic;

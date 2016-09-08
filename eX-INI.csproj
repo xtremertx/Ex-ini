@@ -51,6 +51,7 @@
     <None Include="Core\Elements\KeyValueBinary.cs" />
     <None Include="Core\MacroEngine\MacroEngine.cs" />
     <Compile Include="Core\Settings\ErrorLevelType.cs" />
+    <Compile Include="Core\Settings\Extensions.cs" />
     <Compile Include="Core\Wrappers\Extensions.cs" />
     <Compile Include="Core\Wrappers\StreamWriterWrapper.cs" />
     <Compile Include="Core\Formating\IIniFormatable.cs" />

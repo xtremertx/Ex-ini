@@ -67,31 +67,33 @@ namespace eX_INI
 
         // Creating INI from FILE
         public INI(string filePath)
-            : this()
+            : this(filePath, null, null)
         {
-            file = filePath;
         }
 
         // Creating INI from FILE, with encoding
         public INI(string filePath, Encoding encoding)
-            : this(filePath)
+            : this(filePath, null, encoding)
         {
-            coding = encoding;
         }
 
         // Specifying settings (used for case-secnsitivity only)
         public INI(string filePath, IniParserSettings settings)
-            : this(filePath)
+            : this(filePath, settings, null)
         {
-            Settings = settings;
         }
 
         // For creating or loading some file with ability to find out file encoding for us.
         public INI(string filePath, IniParserSettings settings, bool autoEncoding = false)
-            : this(filePath, settings)
+            : this(filePath, settings, (autoEncoding) ? IniParser.GetFileEncoding(filePath) : null)
         {
-            if (autoEncoding)
-                coding = IniParser.GetFileEncoding(file);
+        }
+
+        public INI(string filePath, IniParserSettings settings, Encoding encoding) : this()
+        {
+            file = filePath;
+            Settings = settings;
+            coding = encoding ?? Encoding.Default;
         }
         #endregion
 
@@ -309,7 +311,7 @@ namespace eX_INI
         private void CaseSensitiveSection(ref string section)
         {
             // CaseSensitive false?
-            if (!Settings.CaseSensitiveSections) section = section.ToLower();
+            if (!Settings.CaseSensitiveSections && !section.IsLowerCase()) section = section.ToLower();
         }
 
         public IEnumerable<Section> GetSections()

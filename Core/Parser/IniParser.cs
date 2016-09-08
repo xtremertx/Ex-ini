@@ -1,4 +1,4 @@
-﻿#if !(NETFX_45 || NETFX_451)
+﻿#if !(NETFX_45 || NETFX_451 || NETFX_452 || NETFX_46 || NETFX_461 || NETFX_462)
 using eX_INI.Wrapper;
 #endif
 
@@ -30,7 +30,7 @@ namespace eX_INI
         #region Events
 
         // After file is saved or loaded succesfully
-        public event Action FileLoaded, FileSaved;
+        public event Action OnLoaded, OnSaved;
         public event Action<string, ErrorLevelType> OnError;
 
         #endregion
@@ -88,7 +88,7 @@ namespace eX_INI
 
         private void Parse(string line)
         {
-#if (NETFX_40 || NETFX_45 || NETFX_451)
+#if (NETFX_40 || NETFX_45 || NETFX_451 || NETFX_452 || NETFX_46 || NETFX_461 || NETFX_462)
             if (string.IsNullOrWhiteSpace(line))
 #else
             if (line.IsNullOrWhiteSpace())
@@ -109,7 +109,7 @@ namespace eX_INI
             if (Settings.ReadNotes && IsNote(line))
                 ParseNote(line);
 
-            else if ((Settings.Includes != UseOfIncludes.Ignore) && /*!last_entity_was_pair &&*/ IsInclude(line))
+            else if ((!Settings.Includes.HasBitFlag(UseOfIncludes.Ignore)) && /*!last_entity_was_pair &&*/ IsInclude(line))
                 ParseInclude(line);
 
             else if (IsSection(line))
@@ -291,7 +291,7 @@ namespace eX_INI
             }
 
             // Make includes editable?
-            if (Settings.Includes == UseOfIncludes.EditAndRestore)
+            if (Settings.Includes.HasBitFlag(UseOfIncludes.EditAndRestore))
             {
                 // Under what section include belong to?
                 string s_name = (cur_section == null) ? Include.START_OF_FILE : cur_section.Name;
@@ -315,7 +315,8 @@ namespace eX_INI
                 cur_notes = new List<string>();
 
                 // We're not parsing include, just making it editable
-                return;
+                if(!Settings.Includes.HasBitFlag(UseOfIncludes.Read))
+                    return;
             }
 
             // Is relative or absolute?
@@ -565,8 +566,8 @@ namespace eX_INI
             Reset();
 
             // Call event
-            if (FileLoaded != null)
-                FileLoaded();
+            if (OnLoaded != null)
+                OnLoaded();
 
             // Return new INI
             return ini;
@@ -576,7 +577,7 @@ namespace eX_INI
         private void WriteIncludesToFile(StreamWriter sw, INI ini, IIniFormatable format, string includeForSection)
         {
             // Includes that dont belongs to any section
-            if (Settings.Includes == UseOfIncludes.EditAndRestore)
+            if (Settings.Includes.HasBitFlag(UseOfIncludes.EditAndRestore))
             {
                 // Get includes for section specified
                 List<Include> list;
@@ -604,7 +605,7 @@ namespace eX_INI
         public void Save(INI ini, Stream stream, Encoding encoding = null, IIniFormatable format = null)
         {
             // Load whole config variables into memory!
-#if (NETFX_45 || NETFX_451)
+#if (NETFX_45 || NETFX_451 || NETFX_452 || NETFX_46 || NETFX_461 || NETFX_462)
             using (StreamWriter sw = new StreamWriter(stream, encoding, 4096, true))  // .NET 4.5 code solving same problem!
 #else
             using (StreamWriterWrapper sw = new StreamWriterWrapper(stream, encoding))
@@ -695,8 +696,8 @@ namespace eX_INI
                 ini.ht_full.Add("", ini.Global);
 
             // Call event
-            if (FileSaved != null)
-                FileSaved();
+            if (OnSaved != null)
+                OnSaved();
         }
 
         public void Save(INI ini, string filepath, Encoding encoding, IIniFormatable format = null)
@@ -782,11 +783,22 @@ namespace eX_INI
             // *** Use Default of Encoding.Default (Ansi CodePage)
             Encoding enc = Encoding.Default;
 
+            if (string.IsNullOrEmpty(srcFile))
+                return enc;
+
             // *** Detect byte order mark if any - otherwise assume default
             byte[] buffer = new byte[5];
-            FileStream file = new FileStream(srcFile, FileMode.Open);
-            file.Read(buffer, 0, 5);
-            file.Close();
+            try
+            {
+                using (FileStream file = new FileStream(srcFile, FileMode.Open))
+                {
+                    file.Read(buffer, 0, 5);
+                }
+            }
+            catch (Exception)
+            {
+                return enc;
+            }
 
             if (buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
                 enc = Encoding.UTF8;
