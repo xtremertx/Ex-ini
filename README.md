@@ -172,7 +172,15 @@ INI Merge(ini1, ini2, true);
 INI.Merge(ini1, ini2, true, true);
 
 // First ini (A) will became MERGED INI, so backup ini A if you need it for some reason..
-parser.Save(backupIni);
+var backupIni = new INI()
+{
+  Encoding = UTF8Encoding.UTF8,
+  Settings = parser.Setting,
+};
+INI.Merge(backupIni, ini1); // This will merge content of ini1 (A) into new clear ini (backup)
+
+// Or you can call, but both object will share same data, so do not call ini1.Clear()
+parser.ReferenceCopyTo(ini1, backupIni);
 ```
 
 Conclusion
@@ -183,6 +191,3 @@ Conclusion
 [!] Library can be targeted from .NET 3.5 to the newest framework version .NET 4.6.2
 
 [?] Rest of the documentation will be added soon...
-
-
-
