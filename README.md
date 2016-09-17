@@ -34,7 +34,7 @@ Features
 Creation of parser with own custom settings & parsing:
 ```C#
 IniParser parser = new IniParser();
-parser.OnError += (text, type) => { Console.WriteLine(text); };
+parser.OnError += (text, type) => { Console.WriteLine(text); };   // to see error, warning, infos..
 parser.Settings = new IniParserSettings()
 {
   CaseSensitiveSections = true,
@@ -106,7 +106,7 @@ parser.Save(IniObject, Console.OpenStandardOutput(), ini.Encoding, new IniFormat
 Conclusion
 ----------
 
-[!] As you can see you're always working with parser and some ini object(s), but there are also some other object like IniFormat or objects used directly in ini object like Section, KeyValue, etc..
+[!] As you can see you're always working with parser and some ini object(s), but there are also some other objects like IniFormat or objects used directly in ini object like Section, KeyValue, etc..
 
 [!] Library can be targeted from .NET 3.5 to the newest framework version .NET 4.6.2
 
