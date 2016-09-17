@@ -435,6 +435,22 @@ namespace eX_INI
             //_settings.CreateGlobalSection = backup2;
         }
 
+        // copyFrom.Clear(), parser.Load(copyFrom), copyFrom.Dispose() will destroy data referenced!
+        public void ReferenceCopyTo(INI copyFrom, INI copyTo)
+        {
+            if (copyFrom == null || copyTo == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            // Remove anything in it, to make GC life easier!
+            copyTo.Clear();
+
+            // Replace information with new one
+            copyTo.ht_full = copyFrom.ht_full;
+            copyTo.ht_incl = copyFrom.ht_incl;
+        }
+
         // Creates ini object with UTF-8 encoding by default
         public INI Load(string data, string lineSeparator, string basePath = null)
         {
