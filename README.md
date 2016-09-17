@@ -35,7 +35,7 @@ Creation of parser with own custom settings & parsing:
 ```C#
 IniParser parser = new IniParser();
 parser.OnError += (text, type) => { Console.WriteLine(text); };   // to see error, warning, infos..
-parser.Settings = new IniParserSettings()
+parser.Settings = new IniParserSettings()   // not nessesary, there is default preset
 {
   CaseSensitiveSections = true,
   CreateGlobalSection = true,
