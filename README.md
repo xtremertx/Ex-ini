@@ -95,7 +95,7 @@ parser.AddStringData(ini, @"[NewSection];k=v;another=value;", ";");
 // Enumerate ini object sections
 foreach (var section in ini)
 {
-Console.WriteLine(section.Name);
+  Console.WriteLine(section.Name);
 }
 
 // Enumerate sections, section names via IEnumerable<T>
@@ -160,6 +160,19 @@ using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
   parser.Save(ini, ms, ini.Encoding, new IniFormat(parser.Settings));
   // DO SOMETHING...
 }
+```
+
+Merging two ini object together
+```C#
+// Merges all from section B into section A (like new pairs in B, ovveriden values from B, new sections in B, but not inheritance)
+INI.Merge(ini1, ini2);
+// Section B will override inheritance in section A
+INI Merge(ini1, ini2, true);
+// Section B will override or adds new includes from B into A, but not notes associated with includes in B (notes are not supported right now)
+INI.Merge(ini1, ini2, true, true);
+
+// First ini (A) will became MERGED INI, so backup ini A if you need it for some reason..
+parser.Save(backupIni);
 ```
 
 Conclusion
