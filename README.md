@@ -35,7 +35,7 @@ Creation of parser with own custom settings & parsing:
 ```C#
 IniParser parser = new IniParser();
 parser.OnError += (text, type) => { Console.WriteLine(text); };   // to see error, warning, infos..
-parser.Settings = new IniParserSettings()   // not nessesary, there is default preset
+parser.Settings = new IniParserSettings()   // not nessesary, there is default preset...
 {
   CaseSensitiveSections = true,
   CreateGlobalSection = true,
@@ -56,13 +56,16 @@ parser.Settings = new IniParserSettings()   // not nessesary, there is default p
   IncludeEndChar = ">",
 };
 
+// Another way of creating INI object via associated parser
+INI ini = new INI(input, parser.Settings, true);
+parser.Load(ini); // parser will fill up INI object with parsed data
+
 // Parsing ini content from file
 var IniObject = parser.Load(@"C:\myfile.ini");
 
-//Parsing ini content from string
+// Parsing ini content from string
 string s = "x=xyz;#commenting first section;[XXX];KEY=VALUE;#comment;A=B;[C];[D:C];f=Z;[FIX];TEXT=LOL";
 var IniObject2 = parser.Load(s, ';');
-
 
 ```
 
@@ -72,18 +75,21 @@ Editing ini object
 ini.AddSection(new Section("TEST"));
 ini.RemoveSection("TEST");
 
+// Remove all sections from the INI object
+ini.Clear();
+
 // Get section & change properties
 var section = ini["MySection"];     // via indexer
-section = TryGetSection("MySection");   // via method
+section = TryGetSection("MySection");   // via method (error-free)
 section.Name = "myNewName";
 section.Notes.Add("My new note...");
 
 // Read section/key
 var value = ini.GetValue("Main", "Key");    // Read 'Key' from section 'Main'
 var value1 = ini.GetValue("Main", "Key", "Yes");  // Read 'Key' from section 'Main' with default value set to 'Yes'
-var value2 = ini.GetValue<bool>(true, Convert.ToBoolean, "Main", "Key2"); // Read again but convert result into bool via handler
+var value2 = ini.GetValue<bool>(true, Convert.ToBoolean, "Main", "Key2"); // Read again but convert the result into bool via existing or custom handler
 
-// Add string ini data into ini object
+// Add string containing ini data into ini object
 parser.AddStringData(ini, @"[NewSection];k=v;another=value;", ";");
 
 // Enumerate ini object sections
@@ -92,15 +98,68 @@ foreach (var section in ini)
 Console.WriteLine(section.Name);
 }
 
-// And much more...
+// Enumerate sections, section names via IEnumerable<T>
+ini.GetSections();
+ini.GetSectionNames();
+
+// Check existence of section/key
+if(ini.KeyExists("section", "key")) {}
+if(ini.SectionExists("section")) {}
+
+// Get 'key=value' pairs of some section
+var pairs = ini.GetValues("section");
+
+// Get global section, global means: '[]' or unnamed/unspecified section on the start of the file
+var main = ini.Global;
+
+// Get includes like Dictionary<string, List<Include>>, where 'string' is section where include(s) belongs and 'List<Include>' is the list of the includes
+var incl = ini.Includes;
+
+// Settings for this INI object used by the parser when incteracting
+var cfg = ini.Settings;
+
+// Encoding & filename associated with this INI object (optional)
+ini.Encoding;
+ini.Filename;
+
+// Whole inheritance of some section, returns pairs (normally inheritance takes into account only base section)
+ini.GetWholeInheritance(mySection);
+
+// Monitoring changes on INI object (not all currently, like pairs)
+ini.Changed += (str, state) => { Console.WriteLine("INI Action on key: {0}, state: {1}", str, state); };
+
+// For more check constructors & overloads...
+```
+
+Section object
+```C#
+var mySection = ini.TryGetSection("section");
+
+// Parent of the section, we derive from it
+mySection.Base;
+
+mySection["key"];
+mySection.GetValue("key");  // error-free
+
+mySection.GetValues(true);  // Returns pairs and derived pairs
+mySection.Pairs;  // Returns just pairs of the section, not derived ones
+
 ```
 
 Saving of ini object
 ```C#
 // Save as new filename
 parser.Save(IniObject, @"C:\myfile_2.cfg");
+
 // Print into console stream
 parser.Save(IniObject, Console.OpenStandardOutput(), ini.Encoding, new IniFormat(parser.Settings));
+
+// Save into memory stream
+using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+{
+  parser.Save(ini, ms, ini.Encoding, new IniFormat(parser.Settings));
+  // DO SOMETHING...
+}
 ```
 
 Conclusion
