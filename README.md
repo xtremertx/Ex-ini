@@ -31,9 +31,158 @@ Features
 
 # Usage:
 
+Creation of parser with own custom settings & parsing:
 ```C#
-// Examples and documentation will be added soon...
+IniParser parser = new IniParser();
+parser.OnError += (text, type) => { Console.WriteLine(text); };   // to see error, warning, infos..
+parser.Settings = new IniParserSettings()   // not nessesary, there is default preset...
+{
+  CaseSensitiveSections = true,
+  CreateGlobalSection = true,
+  EndSectionWithBlankLine = false,
+  PostNotesToLastSection = true,
+  BlankLinesAsNotes = true,
+  ReadNotes = true,
+  WriteNotes = true,
+  Includes = UseOfIncludes.Read,
+  NoteSymbol = "#",
+  DefaultExtension = ".ex-ini",
+  InheritanceChar = ":",
+  SectionStartChar = "[",
+  SectionEndChar = "]",
+  PairOperator = "=",
+  RelativePathSymbol = @"~",
+  IncludeStartChar = "<",
+  IncludeEndChar = ">",
+};
+
+// Another way of creating INI object via associated parser
+INI ini = new INI(input, parser.Settings, true);
+parser.Load(ini); // parser will fill up INI object with parsed data
+
+// Parsing ini content from file
+var IniObject = parser.Load(@"C:\myfile.ini");
+
+// Parsing ini content from string
+string s = "x=xyz;#commenting first section;[XXX];KEY=VALUE;#comment;A=B;[C];[D:C];f=Z;[FIX];TEXT=LOL";
+var IniObject2 = parser.Load(s, ';');
+
 ```
+
+Editing ini object
+```C#
+// Add/Remove section
+ini.AddSection(new Section("TEST"));
+ini.RemoveSection("TEST");
+
+// Remove all sections from the INI object
+ini.Clear();
+
+// Get section & change properties
+var section = ini["MySection"];     // via indexer
+section = TryGetSection("MySection");   // via method (error-free)
+section.Name = "myNewName";
+section.Notes.Add("My new note...");
+
+// Read section/key
+var value = ini.GetValue("Main", "Key");    // Read 'Key' from section 'Main'
+var value1 = ini.GetValue("Main", "Key", "Yes");  // Read 'Key' from section 'Main' with default value set to 'Yes'
+var value2 = ini.GetValue<bool>(true, Convert.ToBoolean, "Main", "Key2"); // Read again but convert the result into bool via existing or custom handler
+
+// Add string containing ini data into ini object
+parser.AddStringData(ini, @"[NewSection];k=v;another=value;", ";");
+
+// Enumerate ini object sections
+foreach (var section in ini)
+{
+  Console.WriteLine(section.Name);
+}
+
+// Enumerate sections, section names via IEnumerable<T>
+ini.GetSections();
+ini.GetSectionNames();
+
+// Check existence of section/key
+if(ini.KeyExists("section", "key")) {}
+if(ini.SectionExists("section")) {}
+
+// Get 'key=value' pairs of some section
+var pairs = ini.GetValues("section");
+
+// Get global section, global means: '[]' or unnamed/unspecified section on the start of the file
+var main = ini.Global;
+
+// Get includes like Dictionary<string, List<Include>>, where 'string' is section where include(s) belongs and 'List<Include>' is the list of the includes
+var incl = ini.Includes;
+
+// Settings for this INI object used by the parser when incteracting
+var cfg = ini.Settings;
+
+// Encoding & filename associated with this INI object (optional)
+ini.Encoding;
+ini.Filename;
+
+// Whole inheritance of some section, returns pairs (normally inheritance takes into account only base section)
+ini.GetWholeInheritance(mySection);
+
+// Monitoring changes on INI object (not all currently, like pairs)
+ini.Changed += (str, state) => { Console.WriteLine("INI Action on key: {0}, state: {1}", str, state); };
+
+// For more check constructors & overloads...
+```
+
+Section object
+```C#
+var mySection = ini.TryGetSection("section");
+
+// Parent of the section, we derive from it
+mySection.Base;
+
+mySection["key"];
+mySection.GetValue("key");  // error-free
+
+mySection.GetValues(true);  // Returns pairs and derived pairs
+mySection.Pairs;  // Returns just pairs of the section, not derived ones
+
+```
+
+Saving of ini object
+```C#
+// Save as new filename
+parser.Save(IniObject, @"C:\myfile_2.cfg");
+
+// Print into console stream
+parser.Save(IniObject, Console.OpenStandardOutput(), ini.Encoding, new IniFormat(parser.Settings));
+
+// Save into memory stream
+using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+{
+  parser.Save(ini, ms, ini.Encoding, new IniFormat(parser.Settings));
+  // DO SOMETHING...
+}
+```
+
+Merging two ini object together
+```C#
+// Merges all from section B into section A (like new pairs in B, ovveriden values from B, new sections in B, but not inheritance)
+INI.Merge(ini1, ini2);
+// Section B will override inheritance in section A
+INI Merge(ini1, ini2, true);
+// Section B will override or adds new includes from B into A, but not notes associated with includes in B (notes are not supported right now)
+INI.Merge(ini1, ini2, true, true);
+
+// First ini (A) will became MERGED INI, so backup ini A if you need it for some reason..
+parser.Save(backupIni);
+```
+
+Conclusion
+----------
+
+[!] As you can see you're always working with parser and some ini object(s), but there are also some other objects like IniFormat or objects used directly in ini object like Section, KeyValue, etc..
+
+[!] Library can be targeted from .NET 3.5 to the newest framework version .NET 4.6.2
+
+[?] Rest of the documentation will be added soon...
 
 
 
