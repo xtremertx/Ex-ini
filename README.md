@@ -31,9 +31,86 @@ Features
 
 # Usage:
 
+Creation of parser with own custom settings & parsing:
 ```C#
-// Examples and documentation will be added soon...
+IniParser parser = new IniParser();
+parser.OnError += (text, type) => { Console.WriteLine(text); };
+parser.Settings = new IniParserSettings()
+{
+  CaseSensitiveSections = true,
+  CreateGlobalSection = true,
+  EndSectionWithBlankLine = false,
+  PostNotesToLastSection = true,
+  BlankLinesAsNotes = true,
+  ReadNotes = true,
+  WriteNotes = true,
+  Includes = UseOfIncludes.Read,
+  NoteSymbol = "#",
+  DefaultExtension = ".ex-ini",
+  InheritanceChar = ":",
+  SectionStartChar = "[",
+  SectionEndChar = "]",
+  PairOperator = "=",
+  RelativePathSymbol = @"~",
+  IncludeStartChar = "<",
+  IncludeEndChar = ">",
+};
+
+// Parsing ini content from file
+var IniObject = parser.Load(@"C:\myfile.ini");
+
+//Parsing ini content from string
+string s = "x=xyz;#commenting first section;[XXX];KEY=VALUE;#comment;A=B;[C];[D:C];f=Z;[FIX];TEXT=LOL";
+var IniObject2 = parser.Load(s, ';');
+
+
 ```
+
+Editing ini object
+```C#
+// Add/Remove section
+ini.AddSection(new Section("TEST"));
+ini.RemoveSection("TEST");
+
+// Get section & change properties
+var section = ini["MySection"];     // via indexer
+section = TryGetSection("MySection");   // via method
+section.Name = "myNewName";
+section.Notes.Add("My new note...");
+
+// Read section/key
+var value = ini.GetValue("Main", "Key");    // Read 'Key' from section 'Main'
+var value1 = ini.GetValue("Main", "Key", "Yes");  // Read 'Key' from section 'Main' with default value set to 'Yes'
+var value2 = ini.GetValue<bool>(true, Convert.ToBoolean, "Main", "Key2"); // Read again but convert result into bool via handler
+
+// Add string ini data into ini object
+parser.AddStringData(ini, @"[NewSection];k=v;another=value;", ";");
+
+// Enumerate ini object sections
+foreach (var section in ini)
+{
+Console.WriteLine(section.Name);
+}
+
+// And much more...
+```
+
+Saving of INIObject
+```C#
+// Save as new filename
+parser.Save(IniObject, @"C:\myfile_2.cfg");
+// Print into console stream
+parser.Save(IniObject, Console.OpenStandardOutput(), ini.Encoding, new IniFormat(parser.Settings));
+```
+
+Conclusion
+----------
+
+[!] As you can see you're always working with parser and some ini object(s), but there are also some other object like IniFormat or objects used directly in ini object like Section, KeyValue, etc..
+
+[!] Library can be targeted from .NET 3.5 to the newest framework version .NET 4.6.2
+
+[?] Rest of the documentation will be added soon...
 
 
 
