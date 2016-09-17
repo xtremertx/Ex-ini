@@ -95,7 +95,7 @@ Console.WriteLine(section.Name);
 // And much more...
 ```
 
-Saving of INIObject
+Saving of ini object
 ```C#
 // Save as new filename
 parser.Save(IniObject, @"C:\myfile_2.cfg");
