@@ -1,5 +1,5 @@
 [![Current version](http://test.the-one.cz/github/ex-ini/version.svg)](https://github.com/xtremertx/Ex-ini)
-[![Current License](http://test.the-one.cz/github/ex-ini/license.svg)](https://github.com/xtremertx/Ex-ini)
+[![Current License](http://test.the-one.cz/github/ex-ini/license.svg)](https://github.com/xtremertx/Ex-ini/LICENSE.txt)
 # Ex-ini
 Extended INI library for .NET
 
