@@ -14,8 +14,8 @@ Current stable version - `2.0.0.3`
 Features
 --------
 
-* Read ini data from multiple different sources: file, stream or string
-* Write ini data to multiple different destinations: file, stream or ini object
+* Reads ini data from multiple different sources: file, stream or string
+* Writes ini data to multiple different destinations: file, stream or ini object
 * Manipulation with notes (w/r)
 * Generate real-time ini from string (using [`String.Format`](https://msdn.microsoft.com/cs-cz/library/system.string.format.aspx) parameters or [`String.Concat`](https://msdn.microsoft.com/cs-cz/library/system.string.concat.aspx) variables)
 * Specify custom output formating (by deriving own one)
@@ -26,7 +26,7 @@ Features
 * Replacing of non-valid values with custom default ones
 * Detection of file encoding or user specified encoding ([`BOM detection`](https://en.wikipedia.org/wiki/Byte_order_mark))
 * OOP manipulation with ini data (sections, pairs, etc.)
-* Merge functionality (merging two .ini objects together)
+* Merge functionality (merging two ini objects together)
 * Adding of ini content into ini object as string
 
 # Usage:
@@ -79,17 +79,17 @@ ini.RemoveSection("TEST");
 ini.Clear();
 
 // Get section & change properties
-var section = ini["MySection"];     // via indexer
+var section = ini["MySection"];     // via indexer (can throw error if section do not exists)
 section = TryGetSection("MySection");   // via method (error-free)
-section.Name = "myNewName";
-section.Notes.Add("My new note...");
+section.Name = "myNewName";             // change name of section
+section.Notes.Add("My new note...");    // list of associated notes for section
 
 // Read section/key
 var value = ini.GetValue("Main", "Key");    // Read 'Key' from section 'Main'
 var value1 = ini.GetValue("Main", "Key", "Yes");  // Read 'Key' from section 'Main' with default value set to 'Yes'
 var value2 = ini.GetValue<bool>(true, Convert.ToBoolean, "Main", "Key2"); // Read again but convert the result into bool via existing or custom handler
 
-// Add string containing ini data into ini object
+// Add string containing ini data into some existing ini object
 parser.AddStringData(ini, @"[NewSection];k=v;another=value;", ";");
 
 // Enumerate ini object sections
@@ -112,13 +112,13 @@ var pairs = ini.GetValues("section");
 // Get global section, global means: '[]' or unnamed/unspecified section on the start of the file
 var main = ini.Global;
 
-// Get includes like Dictionary<string, List<Include>>, where 'string' is section where include(s) belongs and 'List<Include>' is the list of the includes
+// Get includes as Dictionary<string, List<Include>>, where 'string' is section where include(s) belongs and 'List<Include>' is the list of the includes
 var incl = ini.Includes;
 
-// Settings for this INI object used by the parser when incteracting
+// Settings for this INI object used by the parser when interacting (some ini objects can have different settings)
 var cfg = ini.Settings;
 
-// Encoding & filename associated with this INI object (optional)
+// Encoding & filename associated with this INI object (optional - used only by parser when parsing from file, these can be explicitly specified when parser 'Load(..)' is called, usefull when ur saving/loading content of same ini file with same encoding always)
 ini.Encoding;
 ini.Filename;
 
@@ -141,24 +141,24 @@ mySection.Base;
 mySection["key"];
 mySection.GetValue("key");  // error-free
 
-mySection.GetValues(true);  // Returns pairs and derived pairs
+mySection.GetValues(true);  // Returns pairs plus derived pairs, see overloads for more..
 mySection.Pairs;  // Returns just pairs of the section, not derived ones
 
 ```
 
 Saving of ini object
 ```C#
-// Save as new filename
+// Save as new filename (ini content is saved into specified location on HDD, same file is auto-overwritten!)
 parser.Save(IniObject, @"C:\myfile_2.cfg");
 
-// Print into console stream
+// Print into console stream (ini content is written into console stream with specified encoding and formatting based on the settings of parser)
 parser.Save(IniObject, Console.OpenStandardOutput(), ini.Encoding, new IniFormat(parser.Settings));
 
 // Save into memory stream
 using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
 {
   parser.Save(ini, ms, ini.Encoding, new IniFormat(parser.Settings));
-  // DO SOMETHING...
+  // SEND DATA OVER NETWORK, ETC...
 }
 ```
 
@@ -168,18 +168,18 @@ Merging two ini object together
 INI.Merge(ini1, ini2);
 // Section B will override inheritance in section A
 INI Merge(ini1, ini2, true);
-// Section B will override or adds new includes from B into A, but not notes associated with includes in B (notes are not supported right now)
+// Section B will override or adds new includes from B into A, but not notes associated with includes in B (include notes are not supported right now in merging)
 INI.Merge(ini1, ini2, true, true);
 
-// First ini (A) will became MERGED INI, so backup ini A if you need it for some reason..
+// First ini (A) will became MERGED INI, so backup ini A if you need it for some reason unchanged..
 var backupIni = new INI()
 {
   Encoding = UTF8Encoding.UTF8,
   Settings = parser.Setting,
 };
-INI.Merge(backupIni, ini1); // This will merge content of ini1 (A) into new clear ini (backup)
+INI.Merge(backupIni, ini1); // This will merge content of ini1 (A) into new clear ini (backup) -> deep copy
 
-// Or you can call, but both object will share same data, so do not call ini1.Clear()
+// Or you can call, but both object will share same data (weak copy), so do not call ini1.Clear()
 parser.ReferenceCopyTo(ini1, backupIni);
 ```
 
