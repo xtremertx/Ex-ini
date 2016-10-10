@@ -179,7 +179,7 @@ var backupIni = new INI()
 };
 INI.Merge(backupIni, ini1); // This will merge content of ini1 (A) into new clear ini (backup) -> deep copy
 
-// Or you can call, but both object will share same data (weak copy), so do not call ini1.Clear()
+// Or you can use shallow copy but both objects will share same data, so do not call ini1.Clear()
 parser.ReferenceCopyTo(ini1, backupIni);
 ```
 
