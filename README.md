@@ -3,9 +3,10 @@
 # Ex-ini
 Extended INI library for .NET
 
-Library is providing a fast, save and simple manipulation for INI files and content, together with additional extended features.
+Library is providing a fast, save and simple manipulation for INI files and content, together with additional features.
 
-# Version:
+Version
+-------
 
 Current stable version - `2.0.0.3`
 
@@ -27,7 +28,8 @@ Features
 * Merge functionality (merging two ini objects together)
 * Adding of ini content into ini object as string
 
-# Usage:
+Usage
+-----
 
 Creation of parser with own custom settings & parsing:
 ```C#
@@ -183,9 +185,5 @@ parser.ReferenceCopyTo(ini1, backupIni);
 
 Conclusion
 ----------
-
-[!] As you can see you're always working with parser and some ini object(s), but there are also some other objects like IniFormat or objects used directly in ini object like Section, KeyValue, etc..
-
-[!] Library can be targeted from .NET 3.5 to the newest framework version .NET 4.6.2
-
-[?] Rest of the documentation will be added soon...
+[!] Library supports .NET 3.5+
+[?] Rest of the documentation will be added soon on Wiki...
