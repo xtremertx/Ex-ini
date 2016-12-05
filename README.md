@@ -3,9 +3,7 @@
 # Ex-ini
 Extended INI library for .NET
 
-Library is providing a fast, save and simple manipulation for ini files and ini content, together with additional extended features.
-
-Under development right now, most features implemented!
+Library is providing a fast, save and simple manipulation for INI files and content, together with additional extended features.
 
 # Version:
 
