@@ -185,5 +185,7 @@ parser.ReferenceCopyTo(ini1, backupIni);
 
 Conclusion
 ----------
+
 [!] Library supports .NET 3.5+
+
 [?] Rest of the documentation will be added soon on Wiki...
