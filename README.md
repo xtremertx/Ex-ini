@@ -183,8 +183,8 @@ INI.Merge(backupIni, ini1); // This will merge content of ini1 (A) into new clea
 parser.ReferenceCopyTo(ini1, backupIni);
 ```
 
-Conclusion
-----------
+Notes
+-----
 
 [!] Library supports .NET 3.5+
 
