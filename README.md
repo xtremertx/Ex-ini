@@ -26,7 +26,7 @@ Features
 * Detection of file encoding or user specified encoding ([`BOM detection`](https://en.wikipedia.org/wiki/Byte_order_mark))
 * OOP manipulation with ini data (sections, pairs, etc.)
 * Merge functionality (merging two ini objects together)
-* Adding of ini content into ini object as string
+* Adding of ini content in form of string into ini object
 
 Usage
 -----
@@ -34,26 +34,26 @@ Usage
 Creation of parser with own custom settings & parsing:
 ```C#
 IniParser parser = new IniParser();
-parser.OnError += (text, type) => { Console.WriteLine(text); };   // to see error, warning, infos..
-parser.Settings = new IniParserSettings()   // not nessesary, there is default preset...
+parser.OnError += (msg, type) => { Console.WriteLine(msg); };   // to see errors, warnings, infos..
+parser.Settings = new IniParserSettings()   // not nessesary, there is default preset
 {
-  CaseSensitiveSections = true,
-  CreateGlobalSection = true,
-  EndSectionWithBlankLine = false,
-  PostNotesToLastSection = true,
-  BlankLinesAsNotes = true,
-  ReadNotes = true,
-  WriteNotes = true,
-  Includes = UseOfIncludes.Read,
-  NoteSymbol = "#",
-  DefaultExtension = ".ex-ini",
-  InheritanceChar = ":",
-  SectionStartChar = "[",
-  SectionEndChar = "]",
-  PairOperator = "=",
-  RelativePathSymbol = @"~",
-  IncludeStartChar = "<",
-  IncludeEndChar = ">",
+  CaseSensitiveSections = true,         // support for case-sensitive section names, i.e. [A], [a] both can exist in same moment
+  CreateGlobalSection = true,           // global section, we can also call it unnamed, i.e. [] or nothing used
+  EndSectionWithBlankLine = false,      // blank line = new line (Enviroment.NewLine)
+  PostNotesToLastSection = true,        // notes in the end not associated with anything will be associated with last section
+  BlankLinesAsNotes = true,             // new lines will be included in notes (notes = comments)
+  ReadNotes = true,                     // ignore or parse notes?
+  WriteNotes = true,                    // write parsed and created notes back?
+  Includes = UseOfIncludes.Read,        // includes gives you way to link to the another INI file
+  NoteSymbol = "#",                     // prefix for notes
+  DefaultExtension = ".ex-ini",         // default extension used by parser
+  InheritanceChar = ":",                // symbol for inheritance
+  SectionStartChar = "[",               // prefix for section start
+  SectionEndChar = "]",                 // postfix for section end
+  PairOperator = "=",                   // symbol for key-value pair
+  RelativePathSymbol = @"~",            // symbol used for recognizing relative paths in includes
+  IncludeStartChar = "<",               // prefix for include start
+  IncludeEndChar = ">",                 // postfix for include end
 };
 
 // Another way of creating INI object via associated parser
@@ -64,7 +64,7 @@ parser.Load(ini); // parser will fill up INI object with parsed data
 var IniObject = parser.Load(@"C:\myfile.ini");
 
 // Parsing ini content from string
-string s = "x=xyz;#commenting first section;[XXX];KEY=VALUE;#comment;A=B;[C];[D:C];f=Z;[FIX];TEXT=LOL";
+string s = "x=xyz;#commenting first section;[XXX];KEY=VALUE;#comment;A=B;[C];[D:C];f=Z;[YXZ];TEXT=LOL";
 var IniObject2 = parser.Load(s, ';');
 
 ```
@@ -79,7 +79,7 @@ ini.RemoveSection("TEST");
 ini.Clear();
 
 // Get section & change properties
-var section = ini["MySection"];     // via indexer (can throw error if section do not exists)
+var section = ini["MySection"];         // via indexer (can throw error if section do not exists)
 section = TryGetSection("MySection");   // via method (error-free)
 section.Name = "myNewName";             // change name of section
 section.Notes.Add("My new note...");    // list of associated notes for section
