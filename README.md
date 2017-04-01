@@ -38,15 +38,15 @@ parser.OnError += (msg, type) => { Console.WriteLine(msg); };   // to see errors
 parser.Settings = new IniParserSettings()   // not nessesary, there is default preset
 {
   CaseSensitiveSections = true,         // support for case-sensitive section names, i.e. [A], [a] both can exist in same moment
-  CreateGlobalSection = true,           // global section, we can also call it unnamed, i.e. [] or nothing used
+  CreateGlobalSection = true,           // creates global section on the start of the file, we can also call it unnamed, i.e. [] or nothing used
   EndSectionWithBlankLine = false,      // blank line = new line (Enviroment.NewLine)
-  PostNotesToLastSection = true,        // notes in the end not associated with anything will be associated with last section
-  BlankLinesAsNotes = true,             // new lines will be included in notes (notes = comments)
+  PostNotesToLastSection = true,        // notes in the end of the file not associated with anything will be associated with last section
+  BlankLinesAsNotes = true,             // new lines and tabs (\t) will be included in notes (notes = comments)
   ReadNotes = true,                     // ignore or parse notes?
   WriteNotes = true,                    // write parsed and created notes back?
   Includes = UseOfIncludes.Read,        // includes gives you way to link to the another INI file
   NoteSymbol = "#",                     // prefix for notes
-  DefaultExtension = ".ex-ini",         // default extension used by parser
+  DefaultExtension = ".ex-ini",         // default file extension used by parser
   InheritanceChar = ":",                // symbol for inheritance
   SectionStartChar = "[",               // prefix for section start
   SectionEndChar = "]",                 // postfix for section end
@@ -80,7 +80,7 @@ ini.Clear();
 
 // Get section & change properties
 var section = ini["MySection"];         // via indexer (can throw error if section do not exists)
-section = TryGetSection("MySection");   // via method (error-free)
+section = ini.TryGetSection("MySection");   // via method (error-free)
 section.Name = "myNewName";             // change name of section
 section.Notes.Add("My new note...");    // list of associated notes for section
 
@@ -164,7 +164,7 @@ using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
 
 Merging two ini object together
 ```C#
-// Merges all from section B into section A (like new pairs in B, ovveriden values from B, new sections in B, but not inheritance)
+// Merges everything from section B into section A (like: new pairs in B, overriden values from B, new sections in B, but not inheritance)
 INI.Merge(ini1, ini2);
 // Section B will override inheritance in section A
 INI Merge(ini1, ini2, true);
